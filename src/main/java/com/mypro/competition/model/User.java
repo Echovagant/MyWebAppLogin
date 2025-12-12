@@ -10,14 +10,18 @@ public class User {
     private String password; // 密码
     private String name;     // 真实姓名
     private String role;     // 角色：student 或 admin
+    private String studentId; // 学号
+    private String major;    // 专业
 
     // 构造函数
-    public User(int id, String username, String password, String name, String role) {
+    public User(int id, String username, String password, String name, String role, String studentId, String major) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.name = name;
         this.role = role;
+        this.studentId = studentId;
+        this.major = major;
     }
 
     // Getters and Setters
@@ -31,4 +35,8 @@ public class User {
     public void setName(String name) { this.name = name; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+    public String getStudentId() { return studentId; }
+    public void setStudentId(String studentId) { this.studentId = studentId; }
+    public String getMajor() { return major; }
+    public void setMajor(String major) { this.major = major; }
 }

@@ -61,7 +61,8 @@
                     <td class="px-6 py-4 whitespace-nowrap"><%= reg.getTeamName() != null ? reg.getTeamName() : "N/A (个人赛)" %></td>
                     <td class="px-6 py-4 whitespace-nowrap"><%= sdf.format(reg.getRegistrationDate()) %></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <a href="#" class="text-blue-600 hover:text-blue-900">详情/删除</a>
+                        <a href="<%= request.getContextPath() %>/competition/admin?action=view&id=<%= reg.getId() %>" class="text-blue-600 hover:text-blue-900 mr-4">详情</a>
+                        <a href="<%= request.getContextPath() %>/competition/admin?action=delete&id=<%= reg.getId() %>" class="text-red-600 hover:text-red-900" onclick="return confirm('确定要删除这条报名记录吗？')">删除</a>
                     </td>
                 </tr>
                 <%      }

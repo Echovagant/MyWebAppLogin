@@ -60,7 +60,9 @@ public class UserRepository {
                             rs.getString("username"),
                             rs.getString("password"),
                             rs.getString("name"),
-                            rs.getString("role")
+                            rs.getString("role"),
+                            rs.getString("student_id"),
+                            rs.getString("major")
                     );
                     logger.info("登录验证成功");
                     return user;
@@ -73,6 +75,52 @@ public class UserRepository {
         }
 
         logger.info("登录验证失败");
+        return null;
+    }
+
+    /**
+     * 根据用户ID查询用户。
+     * @param userId 用户ID
+     * @return 匹配的 User 对象，如果没有找到则返回 null
+     */
+    public User findById(int userId) {
+        logger.info("开始根据ID查询用户，用户ID: {}", userId);
+
+        String sql = "SELECT id, username, password, role, name, student_id, major FROM users WHERE id = ?";
+        logger.debug("执行查询SQL: {}", sql);
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            logger.debug("SQL参数设置完成：userId={}", userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    logger.info("找到匹配的用户记录，用户ID: {}", rs.getInt("id"));
+                    logger.debug("用户名: {}, 角色: {}, 姓名: {}", 
+                            rs.getString("username"), rs.getString("role"), rs.getString("name"));
+
+                    User user = new User(
+                            rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("name"),
+                            rs.getString("role"),
+                            rs.getString("student_id"),
+                            rs.getString("major")
+                    );
+                    logger.info("根据ID查询用户成功");
+                    return user;
+                } else {
+                    logger.info("没有找到匹配的用户记录");
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("根据ID查询用户异常", e);
+        }
+
+        logger.info("根据ID查询用户失败");
         return null;
     }
 

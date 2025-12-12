@@ -62,3 +62,5 @@ CREATE TABLE `team_members` (
                                 PRIMARY KEY (`id`),
                                 FOREIGN KEY (`registration_id`) REFERENCES `registrations`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='团体赛成员信息表';
+
+UPDATE users SET name = '刘宇飞' WHERE id = 2;

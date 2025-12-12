@@ -61,7 +61,7 @@ public class RegistrationServlet extends HttpServlet {
         }
 
         // 创建用户对象
-        User user = new User(0, username, password, name, "student");
+        User user = new User(0, username, password, name, "student", null, null);
 
         // 保存用户
         if (userRepository.save(user)) {
