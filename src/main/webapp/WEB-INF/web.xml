@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <!-- 欢迎文件列表：设置 index.jsp 为首选入口 -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+    <!-- 过滤器配置 -->
+    <filter>
+        <filter-name>RoleFilter</filter-name>
+        <filter-class>com.mypro.common.RoleFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>RoleFilter</filter-name>
+        <url-pattern>/competition/admin/*</url-pattern>
+    </filter-mapping>
+
+    <!-- ************************************ -->
+    <!-- ***** 实验二: 购物车 Servlet 配置 ***** -->
+    <!-- ************************************ -->
+    <!-- 商品列表 Servlet -->
+    <servlet>
+        <servlet-name>ShowProductsServlet</servlet-name>
+        <servlet-class>com.mypro.shop.controller.ShowProductsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ShowProductsServlet</servlet-name>
+        <url-pattern>/shop/products</url-pattern>
+    </servlet-mapping>
+
+    <!-- 添加到购物车 Servlet -->
+    <servlet>
+        <servlet-name>AddToCartServlet</servlet-name>
+        <servlet-class>com.mypro.shop.controller.AddToCartServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddToCartServlet</servlet-name>
+        <url-pattern>/shop/addToCart</url-pattern>
+    </servlet-mapping>
+
+    <!-- 查看购物车 Servlet -->
+    <servlet>
+        <servlet-name>ViewCartServlet</servlet-name>
+        <servlet-class>com.mypro.shop.controller.ViewCartServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ViewCartServlet</servlet-name>
+        <url-pattern>/shop/viewCart</url-pattern>
+    </servlet-mapping>
+
+    <!-- 更新/移除购物车项 Servlet -->
+    <servlet>
+        <servlet-name>UpdateCartServlet</servlet-name>
+        <servlet-class>com.mypro.shop.controller.UpdateCartServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UpdateCartServlet</servlet-name>
+        <url-pattern>/shop/updateCart</url-pattern>
+    </servlet-mapping>
+
+    <!-- ************************************ -->
+    <!-- ***** 竞赛管理系统 Servlet 配置 (新增) ***** -->
+    <!-- ************************************ -->
+    <!-- 竞赛登录 Servlet -->
+    <servlet>
+        <servlet-name>CompetitionLoginServlet</servlet-name>
+        <servlet-class>com.mypro.competition.controller.CompetitionLoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CompetitionLoginServlet</servlet-name>
+        <url-pattern>/competition/login</url-pattern>
+    </servlet-mapping>
+
+    <!-- 学生主页 Servlet -->
+    <servlet>
+        <servlet-name>StudentHomeServlet</servlet-name>
+        <servlet-class>com.mypro.competition.controller.StudentHomeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentHomeServlet</servlet-name>
+        <url-pattern>/competition/home</url-pattern>
+    </servlet-mapping>
+
+    <!-- 管理员 Servlet -->
+    <servlet>
+        <servlet-name>AdminServlet</servlet-name>
+        <servlet-class>com.mypro.competition.controller.AdminServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminServlet</servlet-name>
+        <url-pattern>/competition/admin</url-pattern>
+    </servlet-mapping>
+
+    <!-- 报名 Servlet -->
+    <servlet>
+        <servlet-name>RegistrationServlet</servlet-name>
+        <servlet-class>com.mypro.competition.controller.RegistrationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RegistrationServlet</servlet-name>
+        <url-pattern>/competition/register</url-pattern>
+    </servlet-mapping>
+
+    <!-- 字符编码过滤器 -->
+    <filter>
+        <filter-name>EncodingFilter</filter-name>
+        <filter-class>com.mypro.common.EncodingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>EncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+</web-app>

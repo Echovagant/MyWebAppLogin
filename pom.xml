@@ -1,0 +1,99 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mypro</groupId>
+    <artifactId>MyWebAppLogin</artifactId>
+
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- 统一使用 Jakarta EE 6.0 (对应 Tomcat 10.1+) -->
+        <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
+        <mysql.connector.version>8.0.33</mysql.connector.version>
+        <jsp.jstl.version>3.0.1</jsp.jstl.version>
+    </properties>
+
+    <dependencies>
+        <!-- 1. Jakarta Servlet API (Web 应用核心依赖) -->
+        <!-- scope: provided 表示由 Tomcat 提供，避免打包到 WAR 中造成冲突 -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>${jakarta.servlet.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <!-- 2. Jakarta JSP JSTL API (用于 JSP 页面) -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>${jsp.jstl.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- 3. MySQL JDBC Connector/J (数据库驱动) -->
+        <!-- 修正为稳定的 8.0.33 版本，解决 8.4.0 找不到的问题 -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql.connector.version}</version>
+            <scope>runtime</scope> <!-- 运行时需要，或者使用 compile 也可以 -->
+        </dependency>
+
+        <!-- 其他依赖，如 log4j 或测试依赖等，根据需要自行添加 -->
+        
+        <!-- 日志框架：SLF4J API -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
+        </dependency>
+        <!-- SLF4J 简单实现 -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.36</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>MyWebAppLogin</finalName>
+        <plugins>
+            <!-- 确保 war 插件能够正确构建 WAR 文件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+            </plugin>
+            <!-- 确保编译器插件使用正确的 Java 版本 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <!-- Tomcat Maven Plugin -->
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <port>8080</port>
+                    <path>/MyWebAppLogin</path>
+                    <uriEncoding>UTF-8</uriEncoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
