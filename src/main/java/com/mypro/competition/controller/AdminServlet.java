@@ -1,6 +1,7 @@
 package com.mypro.competition.controller;
 
 import com.mypro.competition.data.CompetitionRepository;
+import com.mypro.competition.model.Competition;
 import com.mypro.competition.model.Registration;
 import com.mypro.competition.model.User;
 import jakarta.servlet.ServletException;
@@ -9,6 +10,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,6 +35,38 @@ public class AdminServlet extends HttpServlet {
                     return;
                 case "delete":
                     handleDeleteRegistration(request, response);
+                    return;
+                case "viewCompetitions":
+                    viewCompetitions(request, response);
+                    return;
+                case "addCompetition":
+                    showAddCompetitionForm(request, response);
+                    return;
+                case "editCompetition":
+                    showEditCompetitionForm(request, response);
+                    return;
+                case "deleteCompetition":
+                    handleDeleteCompetition(request, response);
+                    return;
+                default:
+                    // 默认处理，加载仪表板
+            }
+        }
+        
+        loadDashboard(request, response);
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+        
+        if (action != null) {
+            switch (action) {
+                case "saveCompetition":
+                    handleSaveCompetition(request, response);
+                    return;
+                case "updateCompetition":
+                    handleUpdateCompetition(request, response);
                     return;
                 default:
                     // 默认处理，加载仪表板
@@ -98,6 +134,162 @@ public class AdminServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             // ID 格式错误，重定向到仪表板
             response.sendRedirect(request.getContextPath() + "/competition/admin");
+        }
+    }
+    
+    /**
+     * 查看所有竞赛信息
+     */
+    private void viewCompetitions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<Competition> competitions = competitionRepository.findAllCompetitions();
+        request.setAttribute("competitions", competitions);
+        request.getRequestDispatcher("/competition/admin_competitions.jsp").forward(request, response);
+    }
+    
+    /**
+     * 显示添加竞赛表单
+     */
+    private void showAddCompetitionForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.getRequestDispatcher("/competition/admin_add_competition.jsp").forward(request, response);
+    }
+    
+    /**
+     * 显示编辑竞赛表单
+     */
+    private void showEditCompetitionForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            int competitionId = Integer.parseInt(request.getParameter("id"));
+            Competition competition = competitionRepository.findCompetitionById(competitionId);
+            
+            if (competition != null) {
+                request.setAttribute("competition", competition);
+                request.getRequestDispatcher("/competition/admin_edit_competition.jsp").forward(request, response);
+            } else {
+                // 竞赛不存在，重定向到竞赛列表
+                response.sendRedirect(request.getContextPath() + "/competition/admin?action=viewCompetitions");
+            }
+        } catch (NumberFormatException e) {
+            // ID 格式错误，重定向到竞赛列表
+            response.sendRedirect(request.getContextPath() + "/competition/admin?action=viewCompetitions");
+        }
+    }
+    
+    /**
+     * 处理保存新竞赛
+     */
+    private void handleSaveCompetition(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        // 设置请求编码
+        request.setCharacterEncoding("UTF-8");
+        
+        // 获取表单参数
+        String name = request.getParameter("name");
+        String level = request.getParameter("level");
+        String formType = request.getParameter("formType");
+        String type = request.getParameter("type");
+        String startDateStr = request.getParameter("startDate");
+        String endDateStr = request.getParameter("endDate");
+        
+        // 解析日期
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date startDate = null;
+        Date endDate = null;
+        
+        try {
+            startDate = dateFormat.parse(startDateStr);
+            endDate = dateFormat.parse(endDateStr);
+        } catch (ParseException e) {
+            request.setAttribute("error", "日期格式错误，请使用YYYY-MM-DD格式");
+            request.getRequestDispatcher("/competition/admin_add_competition.jsp").forward(request, response);
+            return;
+        }
+        
+        // 创建竞赛对象
+        Competition competition = new Competition();
+        competition.setName(name);
+        competition.setLevel(level);
+        competition.setFormType(formType);
+        competition.setType(type);
+        competition.setStartDate(startDate);
+        competition.setEndDate(endDate);
+        
+        // 保存竞赛
+        boolean success = competitionRepository.saveCompetition(competition);
+        
+        if (success) {
+            response.sendRedirect(request.getContextPath() + "/competition/admin?action=viewCompetitions");
+        } else {
+            request.setAttribute("error", "保存竞赛失败，请重试");
+            request.getRequestDispatcher("/competition/admin_add_competition.jsp").forward(request, response);
+        }
+    }
+    
+    /**
+     * 处理更新竞赛信息
+     */
+    private void handleUpdateCompetition(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        // 设置请求编码
+        request.setCharacterEncoding("UTF-8");
+        
+        // 获取表单参数
+        int id = Integer.parseInt(request.getParameter("id"));
+        String name = request.getParameter("name");
+        String level = request.getParameter("level");
+        String formType = request.getParameter("formType");
+        String type = request.getParameter("type");
+        String startDateStr = request.getParameter("startDate");
+        String endDateStr = request.getParameter("endDate");
+        
+        // 解析日期
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date startDate = null;
+        Date endDate = null;
+        
+        try {
+            startDate = dateFormat.parse(startDateStr);
+            endDate = dateFormat.parse(endDateStr);
+        } catch (ParseException e) {
+            request.setAttribute("error", "日期格式错误，请使用YYYY-MM-DD格式");
+            Competition competition = competitionRepository.findCompetitionById(id);
+            request.setAttribute("competition", competition);
+            request.getRequestDispatcher("/competition/admin_edit_competition.jsp").forward(request, response);
+            return;
+        }
+        
+        // 创建竞赛对象
+        Competition competition = new Competition();
+        competition.setId(id);
+        competition.setName(name);
+        competition.setLevel(level);
+        competition.setFormType(formType);
+        competition.setType(type);
+        competition.setStartDate(startDate);
+        competition.setEndDate(endDate);
+        
+        // 更新竞赛
+        boolean success = competitionRepository.updateCompetition(competition);
+        
+        if (success) {
+            response.sendRedirect(request.getContextPath() + "/competition/admin?action=viewCompetitions");
+        } else {
+            request.setAttribute("error", "更新竞赛失败，请重试");
+            request.setAttribute("competition", competition);
+            request.getRequestDispatcher("/competition/admin_edit_competition.jsp").forward(request, response);
+        }
+    }
+    
+    /**
+     * 处理删除竞赛
+     */
+    private void handleDeleteCompetition(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            int competitionId = Integer.parseInt(request.getParameter("id"));
+            boolean success = competitionRepository.deleteCompetition(competitionId);
+            
+            // 删除后重定向到竞赛列表
+            response.sendRedirect(request.getContextPath() + "/competition/admin?action=viewCompetitions");
+        } catch (NumberFormatException e) {
+            // ID 格式错误，重定向到竞赛列表
+            response.sendRedirect(request.getContextPath() + "/competition/admin?action=viewCompetitions");
         }
     }
 }

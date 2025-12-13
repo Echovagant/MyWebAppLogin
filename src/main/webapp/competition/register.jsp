@@ -43,9 +43,15 @@
                            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 
-                <div class="mb-6">
+                <div class="mb-4">
                     <label for="name" class="block text-gray-700 text-sm font-bold mb-2">真实姓名:</label>
                     <input type="text" id="name" name="name" required
+                           class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div class="mb-6">
+                    <label for="major" class="block text-gray-700 text-sm font-bold mb-2">专业信息:</label>
+                    <input type="text" id="major" name="major" 
                            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 

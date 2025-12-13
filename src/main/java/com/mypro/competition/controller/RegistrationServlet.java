@@ -51,6 +51,7 @@ public class RegistrationServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String name = request.getParameter("name");
+        String major = request.getParameter("major");
 
         // 简单验证参数
         if (username == null || password == null || name == null ||
@@ -61,7 +62,7 @@ public class RegistrationServlet extends HttpServlet {
         }
 
         // 创建用户对象
-        User user = new User(0, username, password, name, "student", null, null);
+        User user = new User(0, username, password, name, "student", username, major);
 
         // 保存用户
         if (userRepository.save(user)) {

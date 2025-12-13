@@ -314,6 +314,87 @@ public class CompetitionRepository {
             return false;
         }
     }
+    
+    /**
+     * 保存竞赛信息
+     * @param competition 竞赛对象
+     * @return 是否保存成功
+     */
+    public boolean saveCompetition(Competition competition) {
+        String sql = "INSERT INTO competitions (name, level, form_type, start_date, end_date, type) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, competition.getName());
+            ps.setString(2, competition.getLevel());
+            ps.setString(3, competition.getFormType());
+            ps.setTimestamp(4, new Timestamp(competition.getStartDate().getTime()));
+            ps.setTimestamp(5, new Timestamp(competition.getEndDate().getTime()));
+            ps.setString(6, competition.getType());
+
+            int rowsInserted = ps.executeUpdate();
+            return rowsInserted > 0;
+        } catch (SQLException e) {
+            System.out.println("CompetitionRepository: 保存竞赛信息异常: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * 更新竞赛信息
+     * @param competition 竞赛对象
+     * @return 是否更新成功
+     */
+    public boolean updateCompetition(Competition competition) {
+        String sql = "UPDATE competitions SET name = ?, level = ?, form_type = ?, start_date = ?, end_date = ?, type = ? WHERE id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, competition.getName());
+            ps.setString(2, competition.getLevel());
+            ps.setString(3, competition.getFormType());
+            ps.setTimestamp(4, new Timestamp(competition.getStartDate().getTime()));
+            ps.setTimestamp(5, new Timestamp(competition.getEndDate().getTime()));
+            ps.setString(6, competition.getType());
+            ps.setInt(7, competition.getId());
+
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            System.out.println("CompetitionRepository: 更新竞赛信息异常: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * 删除竞赛信息
+     * @param competitionId 竞赛ID
+     * @return 是否删除成功
+     */
+    public boolean deleteCompetition(int competitionId) {
+        String sql = "DELETE FROM competitions WHERE id = ?";
+        logger.debug("执行删除SQL: {}", sql);
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, competitionId);
+            int rowsDeleted = ps.executeUpdate();
+            
+            boolean success = rowsDeleted > 0;
+            logger.info("删除竞赛{}", success ? "成功" : "失败");
+            return success;
+        } catch (SQLException e) {
+            logger.error("删除竞赛异常, ID: {}", competitionId, e);
+        }
+        
+        return false;
+    }
 
     // 辅助方法：将字节数组转换为十六进制字符串
     private static String bytesToHex(byte[] bytes) {

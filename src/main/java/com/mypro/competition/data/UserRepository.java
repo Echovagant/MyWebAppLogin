@@ -140,7 +140,7 @@ public class UserRepository {
             ps.setString(2, user.getPassword()); // 注意：生产环境应存储哈希值
             ps.setString(3, user.getName());
             ps.setString(4, user.getUsername()); // 使用用户名作为学号
-            ps.setString(5, "未指定"); // 默认专业
+            ps.setString(5, user.getMajor() != null ? user.getMajor() : "未指定"); // 使用用户输入的专业信息，如果为空则使用默认值
 
             int rowsInserted = ps.executeUpdate();
             boolean success = rowsInserted > 0;
