@@ -231,13 +231,32 @@ public class AdminServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         
         // 获取表单参数
-        int id = Integer.parseInt(request.getParameter("id"));
+        String idStr = request.getParameter("id");
+        System.out.println("AdminServlet: 接收到的竞赛ID: " + idStr);
+        
+        if (idStr == null || idStr.isEmpty()) {
+            request.setAttribute("error", "更新竞赛失败：未找到竞赛ID");
+            request.getRequestDispatcher("/competition/admin_edit_competition.jsp").forward(request, response);
+            return;
+        }
+        
+        int id;
+        try {
+            id = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "更新竞赛失败：竞赛ID格式错误");
+            request.getRequestDispatcher("/competition/admin_edit_competition.jsp").forward(request, response);
+            return;
+        }
+        
         String name = request.getParameter("name");
         String level = request.getParameter("level");
         String formType = request.getParameter("formType");
         String type = request.getParameter("type");
         String startDateStr = request.getParameter("startDate");
         String endDateStr = request.getParameter("endDate");
+        
+        System.out.println("AdminServlet: 竞赛更新参数 - ID: " + id + ", 名称: " + name + ", 级别: " + level + ", 形式: " + formType + ", 类型: " + type);
         
         // 解析日期
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

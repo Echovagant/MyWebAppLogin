@@ -321,8 +321,8 @@ public class CompetitionRepository {
      * @return 是否保存成功
      */
     public boolean saveCompetition(Competition competition) {
-        String sql = "INSERT INTO competitions (name, level, form_type, start_date, end_date, type) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO competitions (name, level, form_type, start_date, end_date) " +
+                "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -332,7 +332,6 @@ public class CompetitionRepository {
             ps.setString(3, competition.getFormType());
             ps.setTimestamp(4, new Timestamp(competition.getStartDate().getTime()));
             ps.setTimestamp(5, new Timestamp(competition.getEndDate().getTime()));
-            ps.setString(6, competition.getType());
 
             int rowsInserted = ps.executeUpdate();
             return rowsInserted > 0;
@@ -349,7 +348,7 @@ public class CompetitionRepository {
      * @return 是否更新成功
      */
     public boolean updateCompetition(Competition competition) {
-        String sql = "UPDATE competitions SET name = ?, level = ?, form_type = ?, start_date = ?, end_date = ?, type = ? WHERE id = ?";
+        String sql = "UPDATE competitions SET name = ?, level = ?, form_type = ?, start_date = ?, end_date = ? WHERE id = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -359,8 +358,7 @@ public class CompetitionRepository {
             ps.setString(3, competition.getFormType());
             ps.setTimestamp(4, new Timestamp(competition.getStartDate().getTime()));
             ps.setTimestamp(5, new Timestamp(competition.getEndDate().getTime()));
-            ps.setString(6, competition.getType());
-            ps.setInt(7, competition.getId());
+            ps.setInt(6, competition.getId());
 
             int rowsUpdated = ps.executeUpdate();
             return rowsUpdated > 0;
