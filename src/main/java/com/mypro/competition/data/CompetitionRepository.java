@@ -2,9 +2,9 @@ package com.mypro.competition.data;
 
 import com.mypro.competition.model.Competition;
 import com.mypro.competition.model.Registration;
+import com.mypro.competition.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import java.util.List;
 public class CompetitionRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(CompetitionRepository.class);
+    private final UserRepository userRepository = new UserRepository();
 
     // 数据库连接配置
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/competition_db?useSSL=false&serverTimezone=UTC&characterEncoding=utf8";
@@ -96,14 +97,24 @@ public class CompetitionRepository {
                 String status = rs.getString("status");
                 String teamName = rs.getString("team_name");
 
-                registrations.add(new Registration(
+                // 创建报名记录对象
+                Registration registration = new Registration(
                         id,
                         userId,
                         competitionId,
                         registrationDate,
                         status,
                         teamName
-                ));
+                );
+                
+                // 设置学生用户和竞赛信息
+                User studentUser = userRepository.findById(userId);
+                Competition competition = findCompetitionById(competitionId);
+                
+                registration.setStudentUser(studentUser);
+                registration.setCompetition(competition);
+                
+                registrations.add(registration);
             }
         } catch (SQLException e) {
             logger.error("查询所有报名记录异常", e);
@@ -204,6 +215,80 @@ public class CompetitionRepository {
     }
 
     /**
+     * 根据ID查询报名记录
+     * @param registrationId 报名记录ID
+     * @return 报名记录对象
+     */
+    public Registration findRegistrationById(int registrationId) {
+        String sql = "SELECT id, user_id, comp_id, registration_date, status, team_name FROM registrations WHERE id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, registrationId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    int userId = rs.getInt("user_id");
+                    int competitionId = rs.getInt("comp_id");
+                    Date registrationDate = rs.getDate("registration_date");
+                    String status = rs.getString("status");
+                    String teamName = rs.getString("team_name");
+                    
+                    // 创建报名记录对象
+                    Registration registration = new Registration(
+                            id,
+                            userId,
+                            competitionId,
+                            registrationDate,
+                            status,
+                            teamName
+                    );
+                    
+                    // 设置学生用户和竞赛信息
+                    User studentUser = userRepository.findById(userId);
+                    Competition competition = findCompetitionById(competitionId);
+                    
+                    registration.setStudentUser(studentUser);
+                    registration.setCompetition(competition);
+                    
+                    return registration;
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("查询报名记录异常, ID: {}", registrationId, e);
+        }
+        
+        return null;
+    }
+    
+    /**
+     * 删除报名记录
+     * @param registrationId 报名记录ID
+     * @return 删除成功返回 true，否则 false
+     */
+    public boolean deleteRegistration(int registrationId) {
+        String sql = "DELETE FROM registrations WHERE id = ?";
+        logger.debug("执行删除SQL: {}", sql);
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, registrationId);
+            int rowsDeleted = ps.executeUpdate();
+            
+            boolean success = rowsDeleted > 0;
+            logger.info("删除报名记录{}", success ? "成功" : "失败");
+            return success;
+        } catch (SQLException e) {
+            logger.error("删除报名记录异常, ID: {}", registrationId, e);
+        }
+        
+        return false;
+    }
+    
+    /**
      * 保存报名记录
      * @param registration 报名记录对象
      * @return 是否保存成功
@@ -228,6 +313,85 @@ public class CompetitionRepository {
             e.printStackTrace();
             return false;
         }
+    }
+    
+    /**
+     * 保存竞赛信息
+     * @param competition 竞赛对象
+     * @return 是否保存成功
+     */
+    public boolean saveCompetition(Competition competition) {
+        String sql = "INSERT INTO competitions (name, level, form_type, start_date, end_date) " +
+                "VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, competition.getName());
+            ps.setString(2, competition.getLevel());
+            ps.setString(3, competition.getFormType());
+            ps.setTimestamp(4, new Timestamp(competition.getStartDate().getTime()));
+            ps.setTimestamp(5, new Timestamp(competition.getEndDate().getTime()));
+
+            int rowsInserted = ps.executeUpdate();
+            return rowsInserted > 0;
+        } catch (SQLException e) {
+            System.out.println("CompetitionRepository: 保存竞赛信息异常: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * 更新竞赛信息
+     * @param competition 竞赛对象
+     * @return 是否更新成功
+     */
+    public boolean updateCompetition(Competition competition) {
+        String sql = "UPDATE competitions SET name = ?, level = ?, form_type = ?, start_date = ?, end_date = ? WHERE id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, competition.getName());
+            ps.setString(2, competition.getLevel());
+            ps.setString(3, competition.getFormType());
+            ps.setTimestamp(4, new Timestamp(competition.getStartDate().getTime()));
+            ps.setTimestamp(5, new Timestamp(competition.getEndDate().getTime()));
+            ps.setInt(6, competition.getId());
+
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            System.out.println("CompetitionRepository: 更新竞赛信息异常: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    /**
+     * 删除竞赛信息
+     * @param competitionId 竞赛ID
+     * @return 是否删除成功
+     */
+    public boolean deleteCompetition(int competitionId) {
+        String sql = "DELETE FROM competitions WHERE id = ?";
+        logger.debug("执行删除SQL: {}", sql);
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, competitionId);
+            int rowsDeleted = ps.executeUpdate();
+            
+            boolean success = rowsDeleted > 0;
+            logger.info("删除竞赛{}", success ? "成功" : "失败");
+            return success;
+        } catch (SQLException e) {
+            logger.error("删除竞赛异常, ID: {}", competitionId, e);
+        }
+        
+        return false;
     }
 
     // 辅助方法：将字节数组转换为十六进制字符串

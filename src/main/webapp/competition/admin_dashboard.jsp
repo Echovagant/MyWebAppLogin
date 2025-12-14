@@ -37,6 +37,75 @@
     <main>
         <h2 class="text-2xl font-semibold text-gray-800 mb-6">所有竞赛报名查询结果</h2>
 
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+                <div class="bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium opacity-90">总报名数</p>
+                            <h3 class="text-3xl font-bold mt-1">${registrations.size()}</h3>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium opacity-90">已确认报名</p>
+                            <h3 class="text-3xl font-bold mt-1">
+                                <c:set var="confirmedCount" value="0" />
+                                <c:forEach var="reg" items="${registrations}">
+                                    <c:if test="${reg.status == '已确认'}">
+                                        <c:set var="confirmedCount" value="${confirmedCount + 1}" />
+                                    </c:if>
+                                </c:forEach>
+                                ${confirmedCount}
+                            </h3>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <i class="fas fa-check-circle text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium opacity-90">待审核报名</p>
+                            <h3 class="text-3xl font-bold mt-1">
+                                <c:set var="pendingCount" value="0" />
+                                <c:forEach var="reg" items="${registrations}">
+                                    <c:if test="${reg.status == '待审核'}">
+                                        <c:set var="pendingCount" value="${pendingCount + 1}" />
+                                    </c:if>
+                                </c:forEach>
+                                ${pendingCount}
+                            </h3>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <i class="fas fa-clock text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="admin?action=viewCompetitions" class="bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium opacity-90">竞赛管理</p>
+                            <h3 class="text-3xl font-bold mt-1">
+                                <i class="fas fa-trophy"></i>
+                            </h3>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <i class="fas fa-arrow-right text-xl"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
         <div class="bg-white rounded-xl shadow-lg overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-100">
@@ -61,7 +130,8 @@
                     <td class="px-6 py-4 whitespace-nowrap"><%= reg.getTeamName() != null ? reg.getTeamName() : "N/A (个人赛)" %></td>
                     <td class="px-6 py-4 whitespace-nowrap"><%= sdf.format(reg.getRegistrationDate()) %></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <a href="#" class="text-blue-600 hover:text-blue-900">详情/删除</a>
+                        <a href="<%= request.getContextPath() %>/competition/admin?action=view&id=<%= reg.getId() %>" class="text-blue-600 hover:text-blue-900 mr-4">详情</a>
+                        <a href="<%= request.getContextPath() %>/competition/admin?action=delete&id=<%= reg.getId() %>" class="text-red-600 hover:text-red-900" onclick="return confirm('确定要删除这条报名记录吗？')">删除</a>
                     </td>
                 </tr>
                 <%      }

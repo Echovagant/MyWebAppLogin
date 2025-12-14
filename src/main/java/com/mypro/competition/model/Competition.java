@@ -21,6 +21,10 @@ public class Competition {
         this.endDate = endDate;
         this.type = type;
     }
+    
+    // 无参构造器
+    public Competition() {
+    }
 
     // Getters and Setters
     public int getId() { return id; }

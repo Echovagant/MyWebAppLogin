@@ -106,6 +106,16 @@
         <url-pattern>/competition/register</url-pattern>
     </servlet-mapping>
 
+    <!-- 退出登录 Servlet -->
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>com.mypro.competition.controller.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/competition/logout</url-pattern>
+    </servlet-mapping>
+
     <!-- 字符编码过滤器 -->
     <filter>
         <filter-name>EncodingFilter</filter-name>

@@ -9,7 +9,7 @@
     Competition competition = null;
 
     if (compId != null && !compId.isEmpty()) {
-        competition = compRepo.findById(Integer.parseInt(compId));
+        competition = compRepo.findCompetitionById(Integer.parseInt(compId));
     }
 %>
 <!DOCTYPE html>

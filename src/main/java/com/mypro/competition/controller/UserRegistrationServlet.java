@@ -27,9 +27,10 @@ public class UserRegistrationServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String name = request.getParameter("name");
+        String major = request.getParameter("major");
 
         // 创建用户对象
-        User user = new User(0, username, password, name, "student");
+        User user = new User(0, username, password, name, "student", username, major);
 
         // 保存用户信息
         boolean success = userRepository.save(user);

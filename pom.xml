@@ -30,12 +30,18 @@
         </dependency>
 
 
-        <!-- 2. Jakarta JSP JSTL API (用于 JSP 页面) -->
+        <!-- Jakarta JSP JSTL (用于 JSP 页面) -->
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-            <version>${jsp.jstl.version}</version>
+            <version>2.0.0</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>2.0.0</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- 3. MySQL JDBC Connector/J (数据库驱动) -->
@@ -83,16 +89,40 @@
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
-            <!-- Tomcat Maven Plugin -->
+            <!-- Cargo Maven Plugin for Tomcat 10 -->
             <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>1.10.8</version>
                 <configuration>
-                    <port>8080</port>
-                    <path>/MyWebAppLogin</path>
-                    <uriEncoding>UTF-8</uriEncoding>
+                    <container>
+                        <containerId>tomcat10x</containerId>
+                        <type>embedded</type>
+                    </container>
+                    <configuration>
+                        <properties>
+                            <cargo.servlet.port>8080</cargo.servlet.port>
+                            <cargo.context.path>/MyWebAppLogin</cargo.context.path>
+                        </properties>
+                    </configuration>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                        <artifactId>tomcat-embed-core</artifactId>
+                        <version>10.1.13</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                        <artifactId>tomcat-embed-jasper</artifactId>
+                        <version>10.1.13</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                        <artifactId>tomcat-embed-logging-juli</artifactId>
+                        <version>10.1.13</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
