@@ -19,10 +19,20 @@
 <head>
     <meta charset="UTF-8">
     <title>管理员仪表板 - 报名查询</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .bg-gradient {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+        }
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50">
+<body class="bg-gradient min-h-screen">
 <div class="container mx-auto p-8">
     <header class="flex justify-between items-center py-4 border-b border-red-300 mb-8">
         <h1 class="text-3xl font-extrabold text-red-700">管理员控制台</h1>
